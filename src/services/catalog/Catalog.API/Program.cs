@@ -1,28 +1,9 @@
+using Catalog.API.Entities;
 using Catalog.API.Repositories;
-using Catalog.API.Settings;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
-BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
-
-ServiceSettings serviceSettings;
-
-serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
-
-builder.Services.AddSingleton(ServiceProvider =>
-{
-    var mondoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
-    var mongoClient = new MongoClient(mondoDbSettings.ConnectionString);
-    return mongoClient.GetDatabase(serviceSettings.ServiceName);
-});
-
-builder.Services.AddSingleton<IItemsRepository, ItemsRepository>();
+builder.Services.AddMongo().AddMongoRepository<Item>("items");
 
 builder.Services.AddControllers(options =>
 {
