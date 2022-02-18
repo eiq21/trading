@@ -1,5 +1,5 @@
 using Catalog.API.Entities;
-using Catalog.API.Repositories;
+using Common.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.API.Controllers
@@ -76,7 +76,7 @@ namespace Catalog.API.Controllers
                 return NotFound();
 
 
-            await itemsRepository.DeleteAsync(existingItem.Id);
+            await itemsRepository.RemoveAsync(existingItem.Id);
 
             return NoContent();
 

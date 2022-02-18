@@ -1,3 +1,5 @@
+using Common.Entities;
+
 namespace Catalog.API.Entities
 {
 
