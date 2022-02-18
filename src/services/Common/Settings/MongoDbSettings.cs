@@ -4,6 +4,6 @@ namespace Common.Settings
     {
         public string Host { get; set; }
         public int Port { get; set; }
-        public string ConnectionString => $"mongo://{Host}:{Port}";
+        public string ConnectionString => $"mongodb://{Host}:{Port}";
     }
 }
