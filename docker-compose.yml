@@ -1,5 +1,5 @@
 # docker run -d --rm --name mongo -p 27017:27017 -v mongodbdata:/data/db mongo
-
+#docker run -itd --name db2 --privileged=true -p 50000:50000 -e LICENSE=accept -e DB2INST1_PASSWORD=@Malaga21 -e DBNAME=devdb2 -v /home/db2server_fs/database:/database ibmcom/db2
 version: "3.8"
 
 services:
