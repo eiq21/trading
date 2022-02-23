@@ -1,4 +1,5 @@
 using Common.Repositories;
+using Inventory.API.Clients;
 using Inventory.API.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +10,11 @@ namespace Inventory.API.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly IRepository<InventoryItem> itemsRepository;
-
-        public ItemsController(IRepository<InventoryItem> itemsRepository)
+        private readonly CatalogClient catalogClient;
+        public ItemsController(IRepository<InventoryItem> itemsRepository, CatalogClient catalogClient)
         {
             this.itemsRepository = itemsRepository;
+            this.catalogClient = catalogClient;
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<InventoryItemDto>>> GetAsync(Guid userId)
@@ -20,12 +22,19 @@ namespace Inventory.API.Controllers
             if (userId == Guid.Empty)
                 return BadRequest();
 
-            var items = await itemsRepository.GetAllAsync(item => item.UserId == userId);
+            var catalogItems = await catalogClient.GetCatalogItemAsync();
+            var inventoryItems = await itemsRepository.GetAllAsync(item => item.UserId == userId);
 
-            if (!items.Any())
+            var inventoryItemsDto = inventoryItems.Select(inventoryItem =>
+            {
+                var catalogItem = catalogItems.Single(catalogItem => catalogItem.Id == inventoryItem.CatalogItemId);
+                return inventoryItem.asDto(catalogItem.Name, catalogItem.Description);
+            });
+
+            if (!inventoryItemsDto.Any())
                 return NotFound();
 
-            return Ok(items.Select(item => item.asDto()));
+            return Ok(inventoryItemsDto);
 
         }
 

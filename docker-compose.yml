@@ -6,10 +6,43 @@ services:
   mongo:
     image: mongo
     container_name: mongo
+    networks:
+      - local
     ports:
       - 27017:27017
     volumes:
       - mongodbdata:/data/db
 
+  catalog.api:
+    image: ${DOCKER_REGISTRY-}catalogapi
+    container_name: catalog-api
+    networks:
+      - local
+    ports:
+      - "5001:80"
+    volumes:
+      - data:/data
+    build:
+      context: .
+      dockerfile: src/services/catalog/Catalog.API/Dockerfile
+
+  inventory.api:
+    image: ${DOCKER_REGISTRY-}inventoryapi
+    container_name: inventory-api
+    networks:
+      - local
+    ports:
+      - "6001:80"
+    volumes:
+      - data:/data
+    build:
+      context: .
+      dockerfile: src/services/inventory/Inventory.API/Dockerfile
+
+networks:
+  local:
+    driver: bridge
+
 volumes:
   mongodbdata:
+  data:
